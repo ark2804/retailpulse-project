@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: retailpulse-app
+  labels:
+    app: retailpulse
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: retailpulse
+  template:
+    metadata:
+      labels:
+        app: retailpulse
+    spec:
+      containers:
+        - name: retailpulse
+          image: retailpulse:latest
+          ports:
+            - containerPort: 8501
+          env:
+            - name: POSTGRES_URL
+              valueFrom:
+                secretKeyRef:
+                  name: retailpulse-secrets
+                  key: postgres-url
+            - name: REDIS_URL
+              valueFrom:
+                secretKeyRef:
+                  name: retailpulse-secrets
+                  key: redis-url
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "2Gi"
+              cpu: "1000m"
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8501
+            initialDelaySeconds: 10
+            periodSeconds: 5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: retailpulse-service
+spec:
+  selector:
+    app: retailpulse
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8501
+  type: LoadBalancer
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: retailpulse-secrets
+type: Opaque
+stringData:
+  postgres-url: "postgresql+psycopg2://retailpulse:retailpulse@postgres:5432/retailpulse"
+  redis-url: "redis://redis:6379/0"

@@ -1,0 +1,42 @@
+{
+  "forecast_horizon_days": 30,
+  "segmentation_clusters": 6,
+  "churn_inactivity_days": 60,
+  "inventory_service_level_z": 1.65,
+  "default_lead_time_days": 7,
+  "preferred_data_dirs": ["data/cleaned", "data/raw"],
+  "max_rows_per_file": 30000,
+  "max_wide_rows_per_file": 200,
+  "max_forecast_series": 250,
+  "max_segmentation_customers": 50000,
+  "excluded_file_patterns": [
+    "order_products__prior",
+    "order_products__train",
+    "item_properties",
+    "citem_properties",
+    "sample_submission",
+    "products.csv",
+    "sell_prices.csv"
+  ],
+  "enable_prophet": true,
+  "enable_lstm": true,
+  "enable_mlflow": true,
+  "enable_evidently": true,
+  "enable_prometheus": true,
+  "forecast_ensemble_weights": {
+    "prophet": 0.45,
+    "lstm": 0.35,
+    "statistical": 0.20
+  },
+  "column_aliases": {
+    "date": ["date", "ds", "order_date", "invoice_date", "transaction_date", "event_time", "week", "day"],
+    "item_id": ["item_id", "product_id", "sku", "article_id", "id", "family", "item_nbr", "stockcode"],
+    "store_id": ["store_id", "store", "shop_id", "warehouse", "site_id"],
+    "customer_id": ["customer_id", "customerid", "user_id", "userid", "visitorid", "client_id"],
+    "quantity": ["quantity", "qty", "sales", "units", "demand", "sales_qty", "unit_sales", "num_sold"],
+    "revenue": ["revenue", "sales_value", "amount", "total", "price", "unitprice", "sales_amount"],
+    "stock": ["stock", "inventory", "on_hand", "available_stock", "current_stock"],
+    "lead_time": ["lead_time", "lead_time_days", "supplier_lead_time"],
+    "churn": ["churn", "churned", "is_churned", "label", "target"]
+  }
+}

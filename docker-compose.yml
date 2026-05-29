@@ -1,0 +1,50 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8501:8501"
+    environment:
+      POSTGRES_URL: postgresql+psycopg2://retailpulse:retailpulse@postgres:5432/retailpulse
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      - postgres
+      - redis
+
+  metrics:
+    build: .
+    command: ["python", "scripts/serve_metrics.py"]
+    volumes:
+      - ./reports:/app/reports
+    ports:
+      - "9108:9108"
+
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: retailpulse
+      POSTGRES_USER: retailpulse
+      POSTGRES_PASSWORD: retailpulse
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+
+  prometheus:
+    image: prom/prometheus:v2.52.0
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./reports:/app/reports:ro
+    ports:
+      - "9090:9090"
+    depends_on:
+      - metrics
+
+  grafana:
+    image: grafana/grafana:11.0.0
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus

@@ -12,10 +12,13 @@ ROOT = Path(__file__).resolve().parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+st.set_page_config(page_title="RetailPulse", page_icon="📊")
+st.title("RetailPulse Dashboard")
+st.caption("Initializing dashboard from streamlit_app.py")
+
 try:
     import dashboard.app  # noqa: F401
 except Exception as exc:
-    st.set_page_config(page_title="RetailPulse", page_icon="📊")
     st.title("RetailPulse Dashboard Failed to Load")
     st.error("Unable to import dashboard.app")
     st.exception(exc)
